@@ -3,11 +3,6 @@ CPPFLAGS = -Wall -g
 UNIXARGS = -lsocket -lnsl -lresolv
 
 all: server1 server2 server3 client1 client2
-	./server1
-	./server2
-	./server3
-	./client1
-	./client2
 
 server1: server1.cpp 
 	$(CC) $(CPPFLAGS) -o server1 server1.cpp $(UNIXARGS)
