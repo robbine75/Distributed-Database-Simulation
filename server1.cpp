@@ -66,23 +66,12 @@ int main () {
 
 	char* s1IP = inet_ntoa(((struct sockaddr_in*)(server1info->ai_addr))->sin_addr);
 
-	
+
 	cout << "Server 1 has UDP port number " << ntohs(((struct sockaddr_in*)(server1info->ai_addr))->sin_port); 
 	cout << " and IP address " << s1IP << endl;
 	cout << "\n";
 
 	//======================================================================//
-
-
-	//======================== CLIENT COMMUNICATION ========================//
-
-	//NOTE: all of the code below has to run twice - 
-	//we can either terminate it after two runs or have it run constantly until ctrl+C is hit
-	//i chose to have it run indefinitely 
-
-	while (true) {
-
-		clientno++;
 
 		//========================== SOCKET CREATION ==========================//
 
@@ -102,6 +91,16 @@ int main () {
 
 		//======================================================================//
 
+
+	//======================== CLIENT COMMUNICATION ========================//
+
+	//NOTE: all of the code below has to run twice - 
+	//we can either terminate it after two runs or have it run constantly until ctrl+C is hit
+	//i chose to have it run indefinitely 
+
+	while (true) {
+
+		clientno++;
 
 		//============================= RECV. DATA ============================//
 
@@ -187,11 +186,12 @@ int main () {
 
 		cout << "===================================================== \n" << endl; 
 
-		close (sockfd);
-
 		//======================================================================//
 
 	}
+
+	//close (sockfd);
+
 
 	return 0;
 }
