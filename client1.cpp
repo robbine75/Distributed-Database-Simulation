@@ -12,78 +12,140 @@
 #include <map>
 #include <string>
 #include <iostream> 
+#include <fstream>
+#include <sstream>
+#include <typeinfo>
 
 using namespace std;
 
 int main () {
+
+	cout << "===================================================== \n" << endl; 
+
+	//============================= INIT. ==================================//
+
 	//initialize init. variables/structs
 	map<string, string> searchData; 
-	string inKey;
+	string inKey = "";
 	struct addrinfo hints;
-	struct addrinfo* serverinfo;
+	struct addrinfo *serverinfo;
+
+	//======================================================================//
+
+
+	//======================= READING DATA FROM TXT =========================//
 
 	//read data from server1.txt and store in Map
-	//this converts data in .txt file to standard input
-	freopen("client1.txt", "r", stdin);
+	ifstream ifile("client1.txt");
 
-	//read into map
-	while (!cin.fail()) {
-		string term, value;
-		cin >> term >> value;
+	while (!ifile.fail()) {
+		string term, value, line;
+		getline(ifile, line);
+		stringstream ss(line);
+		ss >> term >> value;
 		searchData.insert(make_pair(term, value));
 	}
+	
+	//======================================================================//
 
-	cout << "Enter your search query (USC, USCLA etc.): " << endl;
-	cin >> inKey;
+
+	//=========================== QUERY SEMANTICS ===========================//
+
+	cout << "Enter your search query (USC, UCLA etc.): ";
+	getline(cin, inKey, '\n');
+	cout << endl;
 
 	//search map for search query:
 	map<string, string>::iterator find = searchData.find(inKey);
-	string key = it->second;
+	string key = find->second;
 
-	cout << "The client1 has received a request with search word " << inKey << " which maps to key " << key << endl;
+	cout << "Client 1 has received a request with search word " << inKey << " which maps to key " << key << endl;
+	cout << "\n";
 
 	string strMsg = "GET " + key;
 	const char* sendMsg = strMsg.c_str();
 	int len = strlen(sendMsg);
 
-	//----------------------- Taken from Beej's Guide -----------------------//
+	//======================================================================//
 
-	memset(&hints, 0, sizeof hints); // make sure the struct is empty
 
-	//set the hints in the hints struct (we want the UDP socket)
-	hints.ai_socktype = SOCK_DGRAM;	//we need UDP
-	hints.ai_family = AF_UNSPEC; //don't care what kind
-	hints.ai_flags = AI_PASSIVE; 	//hopefully this will fill in nunki's IP here
+	//========================= IP AND SERVER INFO ========================//
+	//-------------------- Borrowed from Beej's Guide ---------------------//
 
-	//-------------------------------------------------------------------------//
-
+    memset(&hints, 0, sizeof hints); // make sure the struct is empty
+    hints.ai_family = AF_INET;
+    hints.ai_socktype = SOCK_DGRAM;
 
 	//get addrinfo for server1
 	//struct serverinfo will store the information
-	int status = getaddrinfo("nunki.usc.edu", "21564", &hints, &serverinfo);
+	int status = getaddrinfo("localhost", "21564", &hints, &serverinfo);
 	if (status != 0) {
 		cout << "Failed to retrieve client1:getaddrinfo" << endl;
 		return 1;
 	}
 
+	char* IP = inet_ntoa(((struct sockaddr_in*)(serverinfo->ai_addr))->sin_addr);
+
+	//======================================================================//
+
+
+	//========================== SOCKET CREATION ==========================//
+
 	//create a socket and receive the socket descriptor
-	//the arguments are INET, the type of socket (DGRAM) and the protocol, which can be retrieved from serverinfo
-	int sockD = socket(serverinfo->ai_family, serverinfo->ai_socktype, serverinfo->ai_protocol);
+	//the arguments are INET, the type of socket (DGRAM) and the protocol
+	int sockD = socket(PF_INET, SOCK_DGRAM, 0);
 	if (sockD == -1) {
 		cout << "Failed to create client1:socket" << endl;
 		return 1;
 	}
 
-	//now that we have the socket descriptor, we can connect to server1 from that socket
-	int connStatus = connect(sockD, serverinfo->ai_addr, serverinfo->addrlen);
-	if (connStatus == -1) {
-		cout << "Failed to connect client1:connect" << endl;
+	//======================================================================//
+
+	//===================== PREP CLIENT'S SOCKADDR =======================//
+
+	//here we're going to prep the sockaddr and get the port number
+	struct sockaddr_in c;
+
+	//------- CODE BORROWED FROM https://www.cs.rutgers.edu/~pxk/417/notes/sockets/udp.html ------//
+
+	memset((char *)&c, 0, sizeof(c));
+	c.sin_family = AF_INET;
+	c.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
+	c.sin_port = htons(0);
+	socklen_t addr_len= sizeof c;
+
+	//--------------------------------------------------------------------------------------------//
+
+
+	int bindStat = bind(sockD, (struct sockaddr*)&c, addr_len);
+	  if (bindStat == -1) {
+	  	cout << "Failed to bind client1:bind" << endl;
+	  	return 1;
+	  }
+
+	//cout << inet_ntoa(((struct sockaddr_in*)(&c))->sin_addr) << " IS THIS WHY?" << endl;
+
+	//======================================================================//
+
+
+	//============================ GETSOCKNAME ============================//
+
+	struct sockaddr_in store;
+	socklen_t storesize = sizeof store;
+
+	int getsockstat = getsockname(sockD, (struct sockaddr *)&store, &storesize);
+	if (getsockstat == -1) {
+		cout << "Failed to retrieve port number client1:getsockname" << endl;
 		return 1;
 	}
 
+	//======================================================================//
+
+	//============================== SEND ==================================//
+
 	//now we begin sending data
 	//we check if it failed either if the number of bytes returned is not equal to the length sent or if -1 was returned
-	int sentBytes = send(sockD, sendMsg, len, 0);
+	int sentBytes = sendto(sockD, sendMsg, len, 0, serverinfo->ai_addr, serverinfo->ai_addrlen);
 	if (sentBytes == -1) {
 		cout << "Failed to send client1:send" << endl;
 		return 1;
@@ -93,44 +155,59 @@ int main () {
 		return 1;
 	}
 
-	//convert server1's IP to an ints
-	int s1IP = ntohs(serverinfo->ai_addr->sin_addr);
+	cout << "Client 1 sends the request " << sendMsg; 
+	cout << " to Server 1 with port number " << ntohs(((struct sockaddr_in*)(serverinfo->ai_addr))->sin_port);
+	cout << " and IP address " << IP << endl;
+	cout << "\n";
 
-	cout << "Client1 sends the request " << sendMsg; 
-	cout << " to Server1 with port number 21564 and IP address " << s1IP << endl;
+	//note that server1's IP and the clients should be the same
+	cout << "Client 1's port number is " << ntohs(((struct sockaddr_in*)(&store))->sin_port) << " and IP address is ";
+	cout << inet_ntoa(((struct sockaddr_in*)(&c))->sin_addr) << endl;
+	cout << "\n";
 
-	//to get port number of client
-	//c is of type sockaddr_in but sockaddr* can point to it when typecast
-	sockaddr_in c;
-	getsock_status = getsockname(sockD, (struct sockaddr*)&c, &(c.sin_addr));
+	//======================================================================//
 
-	//note that server1's IP and the clients are the same
-	cout << "Client1's port number is " << ntohs(c.sin_port) << "and IP address is " << s1IP << endl;
+
+	//============================ RECEIVE =================================//
 
 	//intialize buffer to receive from server 1
-	char* r[12];
-	int recvBytes = recv(sockD, r, 12, 0);
+	struct sockaddr_storage s1;
+	socklen_t s1size = sizeof s1;
+	char r[12];
+
+	int recvBytes = recvfrom(sockD, r, 12, 0, (struct sockaddr*)&s1, &s1size);
 	if (recvBytes == -1) {
 		cout << "Failed to receive client1:recv" << endl;
 		return 1;
 	}
-	else if (recv == 0) {
-		cout << "Closing" << endl;
+	else if (recvBytes == 0) {
+		cout << "Closing client1:recv" << endl;
 		close(sockD);
 		return 0;
 	}
-	/*else if (recvBytes != r.length()) {
+	else if (recvBytes != int(strlen(r))) {
 		cout << "Not all bytes received client1:recv" << endl;
 		return 1;
-	}*/
+	}
 
-	//close the connection regardless
-	close(sockD);
+	r[12] = '\0';
 
 	//print closing prompts
-	cout << "Client1 received the value " << r << " from Server1 with port number 21564 and IP address " << s1IP << endl;
+	cout << "Client 1 received the value " << r;
+	cout << " from Server 1 with port number " << ntohs(((struct sockaddr_in*)(serverinfo->ai_addr))->sin_port);
+	cout << " and IP address " << IP << endl;
+	cout << "\n";
 
-	cout << "Client1’s port number is " << ntohs(c.sin_port) << " and IP address is " << s1IP << endl;
+	cout << "Client 1’s port number is " << ntohs(((struct sockaddr_in*)(&store))->sin_port) << " and IP address is ";
+	cout << inet_ntoa(((struct sockaddr_in*)(&c))->sin_addr) << endl;
+	cout << "\n";
+
+	//======================================================================//
+
+	cout << "===================================================== \n" << endl; 
+
+	//CLOSE SOCKET
+	close (sockD);
 
 	return 0;
 }
