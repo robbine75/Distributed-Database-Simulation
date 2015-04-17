@@ -18,3 +18,6 @@ client1: client1.cpp
 
 client2: client2.cpp
 	$(CC) $(CPPFLAGS) -o client2 client2.cpp $(UNIXARGS)
+
+clean:
+	rm server1 server2 server3 client1 client2 

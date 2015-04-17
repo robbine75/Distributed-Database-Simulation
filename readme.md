@@ -13,7 +13,7 @@ Student ID: 9146546564
 + The Servers act in a recursive manner to obtain the corresponding value and return it to the client
 + Note: All IPs have been retrieved using 'localhost' as the host name
 
-#### 2. My Code Files
+##### 2. My Code Files
 + client1.cpp
 	- Creates and fills a map that stores key-value pairs based on the information in client1.txt
 	- Queries the user for a search command and matches it to a key within the map
@@ -55,22 +55,24 @@ Student ID: 9146546564
 	- Receives the GET request and responds with the corresponding POST value
 	- At any time an error is detected, the program will output the location of the error and exit
 
-#### 3. How to Run
+##### 3. How to Run
 + A Makefile is included. This will compile all of the separate files of code
++ 'make clean' will remove all the executables previously created
 + In three separate windows, please run ./server1, ./server2 and ./server3
 + In a fourth window, ./client1 may be run
 + Client 1 will terminate when its job is done
 + In the same window, ./client2 can be run now
++ Note: At the end, all the Servers must be terminated with ctrl+C
 
-#### 4. Format of Exchanged Messages
+##### 4. Format of Exchanged Messages
 + The messages were sent and received between Clients and Servers as char*
 + Many of the operations within the client/server were performed by converting these char*s to strings
 
-#### 5. Idiosyncrasies
+##### 5. Idiosyncrasies
 + None that I have encountered
 + If no value is found, the receieve function in Server 2 fails since the error message causes the buffer to overflow but the project document said that we do not need to account for this edge case
 
-#### 6. Reused Code
+##### 6. Reused Code
 + I have clearly identified where I have reused code in the project
 + The main areas are
 	- The getaddrinfo() sections have a few (2-4) lines from Beej's Socket Programming Guide
