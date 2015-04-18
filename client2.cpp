@@ -80,7 +80,7 @@ int main () {
 	//struct serverinfo will store the information
 	int status = getaddrinfo("localhost", "21564", &hints, &serverinfo);
 	if (status != 0) {
-		cout << "Failed to retrieve client2:getaddrinfo" << endl;
+		perror("Failed to retrieve client2:getaddrinfo");
 		return 1;
 	}
 
@@ -95,7 +95,7 @@ int main () {
 	//the arguments are INET, the type of socket (DGRAM) and the protocol
 	int sockD = socket(PF_INET, SOCK_DGRAM, 0);
 	if (sockD == -1) {
-		cout << "Failed to create client2:socket" << endl;
+		perror("Failed to create client2:socket");
 		return 1;
 	}
 
@@ -119,7 +119,7 @@ int main () {
 
 	int bindStat = bind(sockD, (struct sockaddr*)&c, addr_len);
 	  if (bindStat == -1) {
-	  	cout << "Failed to bind client2:bind" << endl;
+	  	perror("Failed to bind client2:bind");
 	  	return 1;
 	  }
 
@@ -135,7 +135,7 @@ int main () {
 
 	int getsockstat = getsockname(sockD, (struct sockaddr *)&store, &storesize);
 	if (getsockstat == -1) {
-		cout << "Failed to retrieve port number client2:getsockname" << endl;
+		perror("Failed to retrieve port number client2:getsockname");
 		return 1;
 	}
 
@@ -147,11 +147,11 @@ int main () {
 	//we check if it failed either if the number of bytes returned is not equal to the length sent or if -1 was returned
 	int sentBytes = sendto(sockD, sendMsg, len, 0, serverinfo->ai_addr, serverinfo->ai_addrlen);
 	if (sentBytes == -1) {
-		cout << "Failed to send client2:send" << endl;
+		perror("Failed to send client2:send");
 		return 1;
 	}
 	else if (sentBytes != len) {
-		cout << "Not all bytes sent client2:send" << endl;
+		perror("Not all bytes sent client2:send");
 		return 1;
 	}
 
@@ -177,16 +177,16 @@ int main () {
 
 	int recvBytes = recvfrom(sockD, r, 12, 0, (struct sockaddr*)&s1, &s1size);
 	if (recvBytes == -1) {
-		cout << "Failed to receive client1:recv" << endl;
+		perror("Failed to receive client1:recv");
 		return 1;
 	}
 	else if (recvBytes == 0) {
-		cout << "Closing client1:recv" << endl;
+		perror("Closing client1:recv");
 		close(sockD);
 		return 0;
 	}
 	else if (recvBytes != int(strlen(r))) {
-		cout << "Not all bytes received client1:recv" << endl;
+		perror("Not all bytes received client1:recv");
 		return 1;
 	}
 

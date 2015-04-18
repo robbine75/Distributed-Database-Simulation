@@ -44,7 +44,7 @@ int main () {
 	//first we'll have to create a socket
 	int sockfd = socket(AF_INET, SOCK_STREAM, 0);
 	if (sockfd == -1) {
-		cout << "Failed to create server2:socket" << endl;
+		perror("Failed to create server2:socket");
 		return 1;
 	}
 
@@ -61,7 +61,7 @@ int main () {
 	//bind the socket to port 22564
 	int bindStat = bind(sockfd, (struct sockaddr *)&c, addr_len);
 	if (bindStat == -1) {
-		cout << "Failed to bind server2:TCPsocket" << endl;
+		perror("Failed to bind server2:TCPsocket");
 		return 1;
 	}
 
@@ -77,7 +77,7 @@ int main () {
 	//backlog = 3 is good enough for this project
 	int lis = listen(sockfd, 3);
 	if (lis == -1) {
-		cout << "Failed to listen server2:listen" << endl;
+		perror("Failed to listen server2:listen");
 		return 1;
 	}
 
@@ -94,7 +94,7 @@ int main () {
 
 		int newSockfd = accept(sockfd, (struct sockaddr *)&incoming, &clientlen);
 		if (newSockfd == -1) {
-			cout << "Failed to accept server2:accept" << endl;
+			perror("Failed to accept server2:accept");
 			return 1;
 		}
 
@@ -107,16 +107,16 @@ int main () {
 
 		int readbytes = read(newSockfd, reqMsg, 9);
 		if (readbytes == -1) {
-			cout << "Failed to receive server2:read" << endl;
+			perror("Failed to receive server2:read");
 			return 1;
 		}
 		else if (readbytes == 0) {
-			cout << "Closing server2:read" << endl;
+			perror("Closing server2:read");
 			close(newSockfd);
 			return 0;
 		}
 		else if (readbytes != int(strlen(reqMsg))) {
-			cout << "Not all bytes received server2:read" << endl;
+			perror("Not all bytes received server2:read");
 			return 1;
 		}
 
@@ -159,11 +159,11 @@ int main () {
 
 		int writebytes = write(newSockfd, msg, len);
 		if (writebytes == -1) {
-			cout << "Failed to send server2:write" << endl;
+			perror("Failed to send server2:write");
 			return 1;
 		}
 		else if (writebytes != len) {
-			cout << "Not all bytes sent server2:write" << endl;
+			perror("Not all bytes sent server2:write");
 			return 1;
 		}
 
@@ -210,7 +210,7 @@ string tcpServer3 (string request) {
 	//struct serverinfo will store the information
 	int status = getaddrinfo("localhost", "23564", &hints, &server3info);
 	if (status != 0) {
-		cout << "Failed to retrieve server2:getaddrinfo" << endl;
+		perror("Failed to retrieve server2:getaddrinfo");
 		return fail;
 	}
 
@@ -223,7 +223,7 @@ string tcpServer3 (string request) {
 	//create socket and get socket descriptor
 	int socktcp = socket(AF_INET, SOCK_STREAM, 0);
 	if (socktcp == -1) {
-		cout << "Failed to create server2:TCPsocket" << endl;
+		perror("Failed to create server2:TCPsocket");
 		return fail;
 	}
 
@@ -244,7 +244,7 @@ string tcpServer3 (string request) {
 	//bind the socket to port 22564
 	int bindStat = bind(socktcp, (struct sockaddr *)&c, addr_len);
 	if (bindStat == -1) {
-		cout << "Failed to bind server2:TCPsocket" << endl;
+		perror("Failed to bind server2:TCPsocket");
 		return fail;
 	}
 
@@ -255,7 +255,7 @@ string tcpServer3 (string request) {
 
 	int getsockstat = getsockname(socktcp, (struct sockaddr *)&store, &storesize);
 	if (getsockstat == -1) {
-		cout << "Failed to retrieve port number server2:getsockname" << endl;
+		perror("Failed to retrieve port number server2:getsockname");
 		return fail;
 	}
 
@@ -270,7 +270,7 @@ string tcpServer3 (string request) {
 
 	int connStatus = connect(socktcp, (struct sockaddr *)(server3info->ai_addr), server3info->ai_addrlen);
 	if (connStatus == -1) {
-		cout << "Failed to connect server2:TCPsocket" << endl;
+		perror("Failed to connect server2:TCPsocket");
 		return fail;
 	}
 
@@ -287,11 +287,11 @@ string tcpServer3 (string request) {
 
 	int sendStatTCP = write(socktcp, msg, len);
 	if (sendStatTCP == -1) {
-		cout << "Failed to send server2:write" << endl;
+		perror("Failed to send server2:write");
 		return fail;
 	}
 	else if (sendStatTCP != len) {
-		cout << "Not all bytes sent server2:write" << endl;
+		perror("Not all bytes sent server2:write");
 		return fail;
 	}
 
@@ -310,16 +310,16 @@ string tcpServer3 (string request) {
 
 	int readStat = read(socktcp, res, 12);
 	if (readStat == -1) {
-		cout << "Failed to receive server1:read" << endl;
+		perror("Failed to receive server1:read");
 		return fail;
 	}
 	else if (readStat == 0) {
-		cout << "Closing server1:read" << endl;
+		perror("Closing server1:read");
 		close(socktcp);
 		return fail;
 	}
 	else if (readStat != int(strlen(res))) {
-		cout << "Not all bytes received server1:read" << endl;
+		perror("Not all bytes received server1:read");
 		return fail;
 	}
 

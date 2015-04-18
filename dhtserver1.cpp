@@ -60,7 +60,7 @@ int main () {
 	//get the server listening on port 21564
 	int status = getaddrinfo("localhost", "21564", &hints, &server1info);
 	if (status != 0) {
-		cout << "Failed to retrieve server1:getaddrinfo" << endl;
+		perror("Failed to retrieve server1:getaddrinfo");
 		return 1;
 	}
 
@@ -78,14 +78,14 @@ int main () {
 		//create socket and get socket descriptor
 		int sockfd = socket(server1info->ai_family, server1info->ai_socktype, server1info->ai_protocol);
 		if (sockfd == -1) {
-			cout << "Failed to create server1:UDPsocket" << endl;
+			perror("Failed to create server1:UDPsocket");
 			return 1;
 		}
 
 		//bind the socket to port 21564
 		int bindStat = bind(sockfd, server1info->ai_addr, server1info->ai_addrlen);
 		if (bindStat == -1) {
-			cout << "Failed to bind server1:UDPsocket" << endl;
+			perror("Failed to bind server1:UDPsocket");
 			return 1;
 		}
 
@@ -112,7 +112,7 @@ int main () {
 
 		int recStat = recvfrom(sockfd, buf, 9, 0, (struct sockaddr *)&clientinfo, &addr_sz);
 		if (recStat == -1) {
-			cout << "Failed to receive server1:recv" << endl;
+			perror("Failed to receive server1:recv");
 			return 1;
 		}
 
@@ -162,11 +162,11 @@ int main () {
 
 			int sendStat = sendto(sockfd, sendMsg, len, 0, (struct sockaddr *)&clientinfo, addr_sz);
 			if (sendStat == -1) {
-				cout << "Failed to send server1:send" << endl;
+				perror("Failed to send server1:send");
 				return 1;
 			}
 			else if (sendStat != len) {
-				cout << "Not all bytes sent server1:sendto" << endl;
+				perror("Not all bytes sent server1:sendto");
 				return 1;
 			}
 
@@ -216,7 +216,7 @@ string tcpServer2 (string rec) {
 	//struct serverinfo will store the information
 	int status = getaddrinfo("localhost", "22564", &hints2, &server2info);
 	if (status != 0) {
-		cout << "Failed to retrieve server1:getaddrinfo" << endl;
+		perror("Failed to retrieve server1:getaddrinfo");
 		return fail;
 	}
 
@@ -229,7 +229,7 @@ string tcpServer2 (string rec) {
 	//create socket and get socket descriptor
 	int socktcp = socket(AF_INET, SOCK_STREAM, 0);
 	if (socktcp == -1) {
-		cout << "Failed to create server1:TCPsocket" << endl;
+		perror("Failed to create server1:TCPsocket");
 		return fail;
 	}
 
@@ -250,7 +250,7 @@ string tcpServer2 (string rec) {
 	//bind the socket to port 22564
 	int bindStat = bind(socktcp, (struct sockaddr *)&c, addr_len);
 	if (bindStat == -1) {
-		cout << "Failed to bind server1:TCPsocket" << endl;
+		perror("Failed to bind server1:TCPsocket");
 		return fail;
 	}
 
@@ -261,7 +261,7 @@ string tcpServer2 (string rec) {
 
 	int getsockstat = getsockname(socktcp, (struct sockaddr *)&store, &storesize);
 	if (getsockstat == -1) {
-		cout << "Failed to retrieve port number server1:getsockname" << endl;
+		perror("Failed to retrieve port number server1:getsockname");
 		return fail;
 	}
 
@@ -276,7 +276,7 @@ string tcpServer2 (string rec) {
 
 	int connStatus = connect(socktcp, (struct sockaddr *)(server2info->ai_addr), server2info->ai_addrlen);
 	if (connStatus == -1) {
-		cout << "Failed to connect server1:TCPsocket" << endl;
+		perror("Failed to connect server1:TCPsocket");
 		return fail;
 	}
 
@@ -293,11 +293,11 @@ string tcpServer2 (string rec) {
 
 	int sendStatTCP = write(socktcp, msg, len);
 	if (sendStatTCP == -1) {
-		cout << "Failed to send server1:write" << endl;
+		perror("Failed to send server1:write");
 		return fail;
 	}
 	else if (sendStatTCP != len) {
-		cout << "Not all bytes sent server1:write" << endl;
+		perror("Not all bytes sent server1:write");
 		return fail;
 	}
 
@@ -316,16 +316,16 @@ string tcpServer2 (string rec) {
 
 	int readStat = read(socktcp, res, 12);
 	if (readStat == -1) {
-		cout << "Failed to receive server1:read" << endl;
+		perror("Failed to receive server1:read");
 		return fail;
 	}
 	else if (readStat == 0) {
-		cout << "Closing server1:read" << endl;
+		perror("Closing server1:read");
 		close(socktcp);
 		return fail;
 	}
 	else if (readStat != int(strlen(res))) {
-		cout << "Not all bytes received server1:read" << endl;
+		perror("Not all bytes received server1:read");
 		return fail;
 	}
 

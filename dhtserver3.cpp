@@ -40,7 +40,7 @@ int main () {
 	//first we'll have to create a socket
 	int sockfd = socket(AF_INET, SOCK_STREAM, 0);
 	if (sockfd == -1) {
-		cout << "Failed to create server3:socket" << endl;
+		perror("Failed to create server3:socket");
 		return 1;
 	}
 
@@ -57,7 +57,7 @@ int main () {
 	//bind the socket to port 22564
 	int bindStat = bind(sockfd, (struct sockaddr *)&c, addr_len);
 	if (bindStat == -1) {
-		cout << "Failed to bind server3:TCPsocket" << endl;
+		perror("Failed to bind server3:TCPsocket");
 		return 1;
 	}
 
@@ -73,7 +73,7 @@ int main () {
 	//backlog = 3 is good enough for this project
 	int lis = listen(sockfd, 3);
 	if (lis == -1) {
-		cout << "Failed to listen server3:listen" << endl;
+		perror("Failed to listen server3:listen");
 		return 1;
 	}
 
@@ -90,7 +90,7 @@ int main () {
 
 		int newSockfd = accept(sockfd, (struct sockaddr *)&incoming, &clientlen);
 		if (newSockfd == -1) {
-			cout << "Failed to accept server3:accept" << endl;
+			perror("Failed to accept server3:accept");
 			return 1;
 		}
 
@@ -103,16 +103,16 @@ int main () {
 
 		int readbytes = read(newSockfd, reqMsg, 9);
 		if (readbytes == -1) {
-			cout << "Failed to receive server2:read" << endl;
+			perror("Failed to receive server2:read");
 			return 1;
 		}
 		else if (readbytes == 0) {
-			cout << "Closing server2:read" << endl;
+			perror("Closing server2:read");
 			close(newSockfd);
 			return 0;
 		}
 		else if (readbytes != int(strlen(reqMsg))) {
-			cout << "Not all bytes received server2:read" << endl;
+			perror("Not all bytes received server2:read");
 			return 1;
 		}
 
@@ -142,7 +142,7 @@ int main () {
 
 		else {
 			result = "";
-			cout << "Unable to find request" << endl;
+			perror("Unable to find request");
 			return 1;
 		}
 
@@ -151,11 +151,11 @@ int main () {
 
 		int writebytes = write(newSockfd, msg, len);
 		if (writebytes == -1) {
-			cout << "Failed to send server3:write" << endl;
+			perror("Failed to send server3:write");
 			return 1;
 		}
 		else if (writebytes != len) {
-			cout << "Not all bytes sent server3:write" << endl;
+			perror("Not all bytes sent server3:write");
 			return 1;
 		}
 

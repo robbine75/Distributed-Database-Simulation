@@ -26,7 +26,7 @@ Student ID: 9146546564
 + client2.cpp
 	- Does exactly the same as above except it reads data from client2.txt
 
-+ server1.cpp
++ dhtserver1.cpp
 	- Gets it's own address information using getaddrinfo("localhost",...)
 	- The UDP port number is well-known (static) - 21564
 	- Binds socket to port & IP and enters a while loop that will let it communicate with as many clients as necessary
@@ -41,7 +41,7 @@ Student ID: 9146546564
 	- At any time an error is detected, the program will output the location of the error and exit
 
 
-+ server2.cpp
++ dhtserver2.cpp
 	- Creates a TCP socket with well-known port number 22564 and listens for connection requests
 	- In a while loop, it accepts all incoming connections and a new socket is created
 	- Translates the GET request and responds with a POST message or calls a function to setup a TCP connection with Server 3 correspondingly
@@ -49,7 +49,7 @@ Student ID: 9146546564
 	- Once the TCP connection with Server 3 is terminated, the POST message is returned to Server 1
 	- At any time an error is detected, the program will output the location of the error and exit
 
-+ server3.cpp
++ dhtserver3.cpp
 	- Creates a TCP socket with well-known port number 23564 and listens for connection requests
 	- In a while loop, it accepts all incoming connections and a new socket is created
 	- Receives the GET request and responds with the corresponding POST value
