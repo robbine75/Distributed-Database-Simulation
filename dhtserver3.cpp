@@ -49,6 +49,7 @@ int main () {
 	memset((char *)&c, 0, sizeof(c));
 	c.sin_family = AF_INET;
 	c.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
+	//define port being bound to
 	c.sin_port = htons(23564);
 	socklen_t addr_len= sizeof c;
 

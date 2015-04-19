@@ -241,13 +241,15 @@ string tcpServer2 (string rec) {
 
 	memset((char *)&c, 0, sizeof(c));
 	c.sin_family = AF_INET;
+	//use loopback address
 	c.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
+	//this is to ensure the port number is obtained dynamically
 	c.sin_port = htons(0);
 	socklen_t addr_len= sizeof c;
 
 	//----------------------------------------------------------------------------------------------//
 
-	//bind the socket to port 22564
+	//bind to dynamically obtained port number
 	int bindStat = bind(socktcp, (struct sockaddr *)&c, addr_len);
 	if (bindStat == -1) {
 		perror("Failed to bind server1:TCPsocket");

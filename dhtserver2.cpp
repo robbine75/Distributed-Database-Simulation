@@ -53,6 +53,7 @@ int main () {
 	memset((char *)&c, 0, sizeof(c));
 	c.sin_family = AF_INET;
 	c.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
+	//define port being bound to
 	c.sin_port = htons(22564);
 	socklen_t addr_len= sizeof c;
 
@@ -235,13 +236,15 @@ string tcpServer3 (string request) {
 
 	memset((char *)&c, 0, sizeof(c));
 	c.sin_family = AF_INET;
+	//obtain loopback address
 	c.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
+	//obatin a dynamic port number
 	c.sin_port = htons(0);
 	socklen_t addr_len= sizeof c;
 
 	//----------------------------------------------------------------------------------------------//
 
-	//bind the socket to port 22564
+	//bind the socket to dynamically obtained port
 	int bindStat = bind(socktcp, (struct sockaddr *)&c, addr_len);
 	if (bindStat == -1) {
 		perror("Failed to bind server2:TCPsocket");

@@ -3,6 +3,7 @@ Student ID: 9146546564
 
 ### EE 450: Socket Programming Final Project
 
+
 ##### 1. What I've done
 + Created a 3-server distributed hash table model using C++ and the necessary socket programming libraries
 + Client-Server communications were conducted through bidirectional UDP sockets
@@ -12,6 +13,7 @@ Student ID: 9146546564
 + Clients request information by submitting a search query to Server 1
 + The Servers act in a recursive manner to obtain the corresponding value and return it to the client
 + Note: All IPs have been retrieved using 'localhost' as the host name
+
 
 ##### 2. My Code Files
 + client1.cpp
@@ -55,6 +57,7 @@ Student ID: 9146546564
 	- Receives the GET request and responds with the corresponding POST value
 	- At any time an error is detected, the program will output the location of the error and exit
 
+
 ##### 3. How to Run
 + A Makefile is included. This will compile all of the separate files of code
 + 'make clean' will remove all the executables previously created
@@ -64,13 +67,19 @@ Student ID: 9146546564
 + In the same window, ./client2 can be run now
 + Note: At the end, all the Servers must be terminated with ctrl+C
 
+
 ##### 4. Format of Exchanged Messages
 + The messages were sent and received between Clients and Servers as char*
 + Many of the operations within the client/server were performed by converting these char*s to strings
 
-##### 5. Idiosyncrasies
-+ None that I have encountered
+
+##### 5. Possible Idiosyncrasies
++ I am unsure of whether this is an idiosyncrasy or not but - My servers and clients bind to the dynamically obtained TCP/UDP port numbers. If I do not bind, the port numbers remain 0 on one side but are accessible on the other (in a client-server scenario). One of the websites from the hints.pdf (https://www.cs.rutgers.edu/~pxk/417/notes/) encourages this to allow for the identification of the socket (specifically section 2 in - https://www.cs.rutgers.edu/~pxk/417/notes/sockets/index.html). 
+	- NOTE 1: The program works perfectly fine without the bind calls BESIDES printing out the correct port number on one side.
+	- NOTE 2: I would like to clarify that the port numbers are certainly dynamically obtained.
+	- I hope this isn't too much of a problem
 + If no value is found, the receieve function in Server 2 fails since the error message causes the buffer to overflow but the project document said that we do not need to account for this edge case
+
 
 ##### 6. Reused Code
 + I have clearly identified where I have reused code in the project
