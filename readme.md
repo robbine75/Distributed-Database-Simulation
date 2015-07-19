@@ -1,10 +1,4 @@
-Name: Sai Ruthvik Peddawandla
-Student ID: 9146546564
-
-### EE 450: Socket Programming Final Project
-
-
-##### 1. What I've done
+##### 1. What this is about:
 + Created a 3-server distributed hash table model using C++ and the necessary socket programming libraries
 + Client-Server communications were conducted through bidirectional UDP sockets
 + Server-Server communications were conducted through TCP sockets
@@ -15,7 +9,7 @@ Student ID: 9146546564
 + Note: All IPs have been retrieved using 'localhost' as the host name
 
 
-##### 2. My Code Files
+##### 2. File descriptions
 + client1.cpp
 	- Creates and fills a map that stores key-value pairs based on the information in client1.txt
 	- Queries the user for a search command and matches it to a key within the map
