@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="description" content="Distributed Database Simulation : Distributed Network Hash Table Simulation">
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>Distributed Database Simulation</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/ruthvik947/Distributed-Database-Simulation">View on GitHub</a>
+
+          <h1 id="project_title">Distributed Database Simulation</h1>
+          <h2 id="project_tagline">Distributed Network Hash Table Simulation</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/ruthvik947/Distributed-Database-Simulation/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/ruthvik947/Distributed-Database-Simulation/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h5>
+<a id="1-what-this-is-about" class="anchor" href="#1-what-this-is-about" aria-hidden="true"><span class="octicon octicon-link"></span></a>1. What this is about:</h5>
+
+<ul>
+<li>Created a 3-server distributed hash table model using C++ and the necessary socket programming libraries</li>
+<li>Client-Server communications were conducted through bidirectional UDP sockets</li>
+<li>Server-Server communications were conducted through TCP sockets</li>
+<li>Ports were dynamically obtained on the client side<br>
+</li>
+<li>Servers &amp; Clients are run as separate processes on nunki.usc.edu</li>
+<li>Clients request information by submitting a search query to Server 1</li>
+<li>The Servers act in a recursive manner to obtain the corresponding value and return it to the client</li>
+<li>Note: All IPs have been retrieved using 'localhost' as the host name</li>
+</ul>
+
+<h5>
+<a id="2-file-descriptions" class="anchor" href="#2-file-descriptions" aria-hidden="true"><span class="octicon octicon-link"></span></a>2. File descriptions</h5>
+
+<ul>
+<li>
+<p>client1.cpp</p>
+
+<ul>
+<li>Creates and fills a map that stores key-value pairs based on the information in client1.txt</li>
+<li>Queries the user for a search command and matches it to a key within the map</li>
+<li>Retreives address information of Server 1 (well-known port number 21564)</li>
+<li>Creates UDP socket and submits GET request (of the key) to the server using the necessary functions</li>
+<li>Recieves a POST message from Server 1 with the associated value</li>
+<li>Closes the UDP socket and terminates</li>
+<li>At any time an error is detected, the program will output the location of the error and exit</li>
+</ul>
+</li>
+<li>
+<p>client2.cpp</p>
+
+<ul>
+<li>Does exactly the same as above except it reads data from client2.txt</li>
+</ul>
+</li>
+<li>
+<p>dhtserver1.cpp</p>
+
+<ul>
+<li>Gets it's own address information using getaddrinfo("localhost",...)</li>
+<li>The UDP port number is well-known (static) - 21564</li>
+<li>Binds socket to port &amp; IP and enters a while loop that will let it communicate with as many clients as necessary</li>
+<li>Note that Server 1 will only cease to operate when ctrl+C is pressed by the user</li>
+<li>Inside the while loop, Server 1 will receive the GET message from the Client</li>
+<li>If it has the requested value, it will respond with a POST message and the corresponding value</li>
+<li>If not, it will call a function that sets up a TCP connection with Server 2</li>
+<li>In this function, it will obtain Server 2's address info (although the port number is well-known: 22564)</li>
+<li>Then, a new TCP socket is created and bound to Server 1. It will forward the GET request through this socket</li>
+<li>After receiving the POST value, it will return to the main function and forward the POST message to the Client</li>
+<li>Before returning, it will close the TCP socket</li>
+<li>At any time an error is detected, the program will output the location of the error and exit</li>
+</ul>
+</li>
+<li>
+<p>dhtserver2.cpp</p>
+
+<ul>
+<li>Creates a TCP socket with well-known port number 22564 and listens for connection requests</li>
+<li>In a while loop, it accepts all incoming connections and a new socket is created</li>
+<li>Translates the GET request and responds with a POST message or calls a function to setup a TCP connection with Server 3 correspondingly</li>
+<li>The function operates exactly like the one in Server 1</li>
+<li>Once the TCP connection with Server 3 is terminated, the POST message is returned to Server 1</li>
+<li>At any time an error is detected, the program will output the location of the error and exit</li>
+</ul>
+</li>
+<li>
+<p>dhtserver3.cpp</p>
+
+<ul>
+<li>Creates a TCP socket with well-known port number 23564 and listens for connection requests</li>
+<li>In a while loop, it accepts all incoming connections and a new socket is created</li>
+<li>Receives the GET request and responds with the corresponding POST value</li>
+<li>At any time an error is detected, the program will output the location of the error and exit</li>
+</ul>
+</li>
+</ul>
+
+<h5>
+<a id="3-how-to-run" class="anchor" href="#3-how-to-run" aria-hidden="true"><span class="octicon octicon-link"></span></a>3. How to Run</h5>
+
+<ul>
+<li>A Makefile is included. This will compile all of the separate files of code</li>
+<li>'make clean' will remove all the executables previously created</li>
+<li>In three separate windows, please run ./server1, ./server2 and ./server3</li>
+<li>In a fourth window, ./client1 may be run</li>
+<li>Client 1 will terminate when its job is done</li>
+<li>In the same window, ./client2 can be run now</li>
+<li>Note: At the end, all the Servers must be terminated with ctrl+C</li>
+</ul>
+
+<h5>
+<a id="4-format-of-exchanged-messages" class="anchor" href="#4-format-of-exchanged-messages" aria-hidden="true"><span class="octicon octicon-link"></span></a>4. Format of Exchanged Messages</h5>
+
+<ul>
+<li>The messages were sent and received between Clients and Servers as char*</li>
+<li>Many of the operations within the client/server were performed by converting these char*s to strings</li>
+</ul>
+
+<h5>
+<a id="5-possible-idiosyncrasies" class="anchor" href="#5-possible-idiosyncrasies" aria-hidden="true"><span class="octicon octicon-link"></span></a>5. Possible Idiosyncrasies</h5>
+
+<ul>
+<li>I am unsure of whether this is an idiosyncrasy or not but - My servers and clients bind to the dynamically obtained TCP/UDP port numbers. If I do not bind, the port numbers remain 0 on one side but are accessible on the other (in a client-server scenario). One of the websites from the hints.pdf (<a href="https://www.cs.rutgers.edu/%7Epxk/417/notes/">https://www.cs.rutgers.edu/~pxk/417/notes/</a>) encourages this to allow for the identification of the socket (specifically section 2 in - <a href="https://www.cs.rutgers.edu/%7Epxk/417/notes/sockets/index.html">https://www.cs.rutgers.edu/~pxk/417/notes/sockets/index.html</a>). 
+
+<ul>
+<li>NOTE 1: The program works perfectly fine without the bind calls BESIDES printing out the correct port number on one side.</li>
+<li>NOTE 2: I would like to clarify that the port numbers are certainly dynamically obtained.</li>
+<li>I hope this isn't too much of a problem</li>
+</ul>
+</li>
+<li>If no value is found, the receieve function in Server 2 fails since the error message causes the buffer to overflow but the project document said that we do not need to account for this edge case</li>
+</ul>
+
+<h5>
+<a id="6-reused-code" class="anchor" href="#6-reused-code" aria-hidden="true"><span class="octicon octicon-link"></span></a>6. Reused Code</h5>
+
+<ul>
+<li>I have clearly identified where I have reused code in the project</li>
+<li>The main areas are
+
+<ul>
+<li>The getaddrinfo() sections have a few (2-4) lines from Beej's Socket Programming Guide</li>
+<li>The bind() sections have a few (2-4) lines from this website: <a href="https://www.cs.rutgers.edu/%7Epxk/417/notes/sockets/index.html">https://www.cs.rutgers.edu/~pxk/417/notes/sockets/index.html</a>
+</li>
+<li>These lines are basically information to preload a sockaddr with</li>
+</ul>
+</li>
+</ul>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">Distributed Database Simulation maintained by <a href="https://github.com/ruthvik947">ruthvik947</a></p>
+        <p>Published with <a href="https://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+    
+
+  </body>
+</html>
